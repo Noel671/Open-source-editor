@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Code Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="eula-overlay" class="eula-overlay" style="display: none;">
+        <div class="eula-dialog">
+            <h2>License Agreement</h2>
+            <div class="eula-content">
+                <p>⚠️ Important Legal Notice ⚠️</p>
+                <p>This software is protected by copyright law. Copying, distributing, or modifying is strictly prohibited and will be prosecuted.</p>
+                <p>By using this software, you agree to the following terms:</p>
+                <ul>
+                    <li>The software may only be used for personal purposes</li>
+                    <li>Any form of sharing or publishing is prohibited</li>
+                    <li>All rights are reserved to the developer</li>
+                </ul>
+                <p>© 2024 Noel - All rights reserved</p>
+            </div>
+            <div class="eula-buttons">
+                <button id="decline-eula" class="eula-btn decline">Decline</button>
+                <button id="accept-eula" class="eula-btn accept">Accept</button>
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="save-project" class="control-btn">Save Project</button>
+        <button id="theme-toggle" class="control-btn">Toggle Theme</button>
+        <div class="zoom-controls">
+            <button id="zoom-out" class="control-btn">-</button>
+            <button id="zoom-reset" class="control-btn">100%</button>
+            <button id="zoom-in" class="control-btn">+</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <button id="new-project-btn" class="primary-btn">New Project</button>
+            <ul class="project-list"></ul>
+        </div>
+        <div class="main-content">
+            <div class="editor-container" data-language="HTML">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="html">HTML</button>
+                    <button class="tab-button" data-tab="css">CSS</button>
+                    <button class="tab-button" data-tab="js">JavaScript</button>
+                </div>
+                <textarea id="html-code" class="editor" placeholder="HTML code here..."></textarea>
+                <textarea id="css-code" class="editor" style="display: none;" placeholder="CSS code here..."></textarea>
+                <textarea id="js-code" class="editor" style="display: none;" placeholder="JavaScript code here..."></textarea>
+            </div>
+            <div class="preview-container">
+                <iframe class="preview"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        Copyright © 2024 by Noel. All rights reserved.
+    </div>
+    <script src="script.js"></script>
+    <script>
+        const htmlEditor = document.getElementById('html-code');
+        const cssEditor = document.getElementById('css-code');
+        const jsEditor = document.getElementById('js-code');
+        const preview = document.querySelector('.preview');
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        function updatePreview() {
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>${cssEditor.value}</style>
+                    </head>
+                    <body>
+                        ${htmlEditor.value}
+                        <script>
+                            try {
+                                ${jsEditor.value}
+                            } catch(e) {
+                                console.error('JavaScript Error:', e);
+                            }
+                        <\/script>
+                    </body>
+                </html>
+            `;
+            preview.srcdoc = content;
+        }
+
+        [htmlEditor, cssEditor, jsEditor].forEach(editor => {
+            editor.addEventListener('input', updatePreview);
+        });
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                [htmlEditor, cssEditor, jsEditor].forEach(editor => {
+                    editor.style.display = 'none';
+                });
+
+                document.getElementById(`${button.dataset.tab}-code`).style.display = 'block';
+            });
+        });
+
+        new ProjectManager();
+    </script>
+</body>
+</html>
